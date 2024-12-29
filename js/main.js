@@ -8,13 +8,17 @@ const expensesList = document.querySelector('#expenses-list');
 
 const budget = [];
 
+function resetForm() {
+    form.reset();
+}
+
 form.addEventListener('submit', (e) => {
 // Остановили стандартное поведение при отправке формы
     e.preventDefault();
 
     //Определяем id
     let id = 1;
-    if(budget.length > 0){
+    if (budget.length > 0) {
         id = budget.length + 1
     }
     //Собираем данные из формы и записываем в объект
@@ -47,25 +51,27 @@ form.addEventListener('submit', (e) => {
           </li>`
 
     //Проверяем велью инпута, в какую колонку вносить запись - в расход, или доход
-    if(title.value === ''){
+    if (title.value === '') {
+        title.classList.add('form__input--error');
         return
+    } else {
+        title.classList.remove('form__input--error');
     }
-    if(cost.value === ''){
+    if (cost.value === '') {
+        cost.classList.add('form__input--error');
         return
+    } else {
+        cost.classList.remove('form__input--error');
     }
 
 
-    if(note.type === 'inc'){
+    if (note.type === 'inc') {
         incomesList.insertAdjacentHTML('afterbegin', incomeTemplate);
     }
     //Проверяем велью инпута, в какую колонку вносить запись - в расход, или доход
-    if(note.type === 'exp'){
+    if (note.type === 'exp') {
         expensesList.insertAdjacentHTML('afterbegin', expTemplate);
     }
 
-
-
-
-
-
+    resetForm()
 })
