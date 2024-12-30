@@ -30,7 +30,42 @@ function renderDemoData() {
 }
 
 renderDemoData()
+function calcBudget() {
 
+    // Считаем общий доход
+
+    const totalIncome = budget.reduce((total, element) => {
+        if (element.type === 'inc') {
+            return total + element.value;
+        } else {
+            return total
+        }
+
+    }, 0)
+
+    // Считаем общий расход
+
+    const totalExpense = budget.reduce((total, element) => {
+        if (element.type === 'exp') {
+            return total + element.value;
+        } else {
+            return total
+        }
+
+    }, 0)
+
+    // Считаем общий бюджет
+    const totalBudget = totalIncome - totalExpense;
+
+    // Считаем процент расходов, от доходов
+    let expensePercents = 0
+    if(totalIncome > 0){
+        expensePercents = Math.round((totalExpense * 100) / totalIncome)
+    }
+
+
+
+}
 
 function resetForm() {
     form.reset();
@@ -97,8 +132,10 @@ form.addEventListener('submit', (e) => {
         expensesList.insertAdjacentHTML('afterbegin', expTemplate);
     }
 
+    calcBudget()
     resetForm()
     renderDemoData()
+
 })
 
 //Удаление записей
@@ -114,9 +151,9 @@ document.addEventListener('click', (e) => {
         })
 
         budget.splice(id,1);
-
         parentEl.remove()
-        console.log(budget)
+        calcBudget()
+
 
     }
 })
