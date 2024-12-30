@@ -9,7 +9,7 @@ const expensesList = document.querySelector('#expenses-list');
 const budget = [];
 
 
-function renderDemoData (){
+function renderDemoData() {
     const demoData = [
         {title: 'Аренда квартиры', cost: 20000, type: 'exp'},
         {title: 'Бензин', cost: 10000, type: 'exp'},
@@ -17,13 +17,18 @@ function renderDemoData (){
         {title: 'Зарплата', cost: 60000, type: 'inc'},
         {title: 'Фриланс', cost: 7000, type: 'inc'},
         {title: 'Авито', cost: 20000, type: 'inc'},
+        {title: 'Наследство', cost: 100000, type: 'inc'},
+        {title: 'Пиратский сундук', cost: 500000, type: 'inc'},
+        {title: 'Дань золотой орде', cost: 10, type: 'exp'},
+
     ]
-   let randomNum = Math.floor(Math.random() * demoData.length);
-  let randomDemoObj = demoData[randomNum];
+    let randomNum = Math.floor(Math.random() * demoData.length);
+    let randomDemoObj = demoData[randomNum];
     title.value = randomDemoObj.title;
     cost.value = randomDemoObj.cost
     type.value = randomDemoObj.type;
 }
+
 renderDemoData()
 
 
@@ -93,5 +98,25 @@ form.addEventListener('submit', (e) => {
     }
 
     resetForm()
-    renderDemoData ()
+    renderDemoData()
+})
+
+//Удаление записей
+document.addEventListener('click', (e) => {
+    //Проверяем что клик был сделан по кнопке у которой есть определенный родитель
+    if (e.target.closest('.item__remove')) {
+        const parentEl = e.target.closest('.budget-list__item');
+        const id = +parentEl.dataset.id;
+       const curNote =  budget.findIndex((el)=>{
+            if(el.id === id){
+                return true
+            }
+        })
+
+        budget.splice(id,1);
+
+        parentEl.remove()
+        console.log(budget)
+
+    }
 })
