@@ -30,40 +30,42 @@ function renderDemoData() {
 }
 
 renderDemoData()
+calcBudget()
+
 function calcBudget() {
 
     // Считаем общий доход
 
-    const totalIncome = budget.reduce((total, element) => {
+    let totalIncome = budget.reduce((total, element) => {
         if (element.type === 'inc') {
-            return total + element.value;
+
+            return total + element.cost;
+
         } else {
             return total
         }
 
     }, 0)
+
 
     // Считаем общий расход
 
-    const totalExpense = budget.reduce((total, element) => {
+    let totalExpense = budget.reduce((total, element) => {
         if (element.type === 'exp') {
-            return total + element.value;
+            return total + element.cost;
         } else {
             return total
         }
-
     }, 0)
 
-    // Считаем общий бюджет
+
     const totalBudget = totalIncome - totalExpense;
 
-    // Считаем процент расходов, от доходов
+
     let expensePercents = 0
-    if(totalIncome > 0){
+    if (totalIncome > 0) {
         expensePercents = Math.round((totalExpense * 100) / totalIncome)
     }
-
-
 
 }
 
@@ -84,7 +86,7 @@ form.addEventListener('submit', (e) => {
     const note = {
         id: id,
         title: title.value,
-        cost: cost.value,
+        cost: +cost.value,
         type: type.value,
     };
     //Пушим объект в массив
@@ -144,13 +146,13 @@ document.addEventListener('click', (e) => {
     if (e.target.closest('.item__remove')) {
         const parentEl = e.target.closest('.budget-list__item');
         const id = +parentEl.dataset.id;
-       const curNote =  budget.findIndex((el)=>{
-            if(el.id === id){
+        const curNote = budget.findIndex((el) => {
+            if (el.id === id) {
                 return true
             }
         })
 
-        budget.splice(id,1);
+        budget.splice(id, 1);
         parentEl.remove()
         calcBudget()
 
