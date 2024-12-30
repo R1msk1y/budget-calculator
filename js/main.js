@@ -8,6 +8,25 @@ const expensesList = document.querySelector('#expenses-list');
 
 const budget = [];
 
+
+function renderDemoData (){
+    const demoData = [
+        {title: 'Аренда квартиры', cost: 20000, type: 'exp'},
+        {title: 'Бензин', cost: 10000, type: 'exp'},
+        {title: 'Праздники', cost: 12000, type: 'exp'},
+        {title: 'Зарплата', cost: 60000, type: 'inc'},
+        {title: 'Фриланс', cost: 7000, type: 'inc'},
+        {title: 'Авито', cost: 20000, type: 'inc'},
+    ]
+   let randomNum = Math.floor(Math.random() * demoData.length);
+  let randomDemoObj = demoData[randomNum];
+    title.value = randomDemoObj.title;
+    cost.value = randomDemoObj.cost
+    type.value = randomDemoObj.type;
+}
+renderDemoData()
+
+
 function resetForm() {
     form.reset();
 }
@@ -74,4 +93,5 @@ form.addEventListener('submit', (e) => {
     }
 
     resetForm()
+    renderDemoData ()
 })
