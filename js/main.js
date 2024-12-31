@@ -9,20 +9,27 @@ const expensesList = document.querySelector('#expenses-list');
 const incomeEl = document.querySelector('#total-income');
 const expenseEl = document.querySelector('#total-expense');
 const budgetEl = document.querySelector('#budget');
+
 const percentageWrapper = document.querySelector('#expense-percents-wrapper');
+const monthEl = document.querySelector('#month');
+const yearEl = document.querySelector('#year');
 const budget = [];
 
-
+//Функции
+const priceFormatter = new Intl.NumberFormat('ru-RU', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+})
 function renderDemoData() {
     const demoData = [
-        {title: 'Аренда квартиры', cost: 20000, type: 'exp'},
-        {title: 'Бензин', cost: 10000, type: 'exp'},
-        {title: 'Праздники', cost: 12000, type: 'exp'},
-        {title: 'Зарплата', cost: 60000, type: 'inc'},
-        {title: 'Фриланс', cost: 7000, type: 'inc'},
-        {title: 'Авито', cost: 20000, type: 'inc'},
-        {title: 'Наследство', cost: 100000, type: 'inc'},
-        {title: 'Пиратский сундук', cost: 500000, type: 'inc'},
+        {title: 'Аренда квартиры', cost: 1500, type: 'exp'},
+        {title: 'Бензин', cost: 2000, type: 'exp'},
+        {title: 'Праздники', cost: 2000, type: 'exp'},
+        {title: 'Зарплата', cost: 1000, type: 'inc'},
+        {title: 'Авито', cost: 200, type: 'inc'},
+        {title: 'Должники', cost: 500, type: 'inc'},
+        {title: 'Пиратский сундук', cost: 1000, type: 'inc'},
         {title: 'Дань золотой орде', cost: 10, type: 'exp'},
 
     ]
@@ -32,9 +39,9 @@ function renderDemoData() {
     cost.value = randomDemoObj.cost
     type.value = randomDemoObj.type;
 }
-
-
-
+function resetForm() {
+    form.reset();
+}
 function calcBudget() {
 
     // Считаем общий доход
@@ -66,25 +73,36 @@ function calcBudget() {
 
 
     let expensePercents = 0
-    if (totalIncome > 0) {
+    if (totalIncome) {
         expensePercents = Math.round((totalExpense * 100) / totalIncome)
     }
 
     //Выводим данные на страницу
-    incomeEl.innerHTML = totalIncome;
-    expenseEl.innerHTML = totalExpense;
-    budgetEl.innerHTML = totalBudget;
-    let percentageDiv = `<div class="badge">${expensePercents}</div>`;
+    incomeEl.innerHTML = '+ ' + priceFormatter.format(totalIncome);
+    expenseEl.innerHTML = '- ' + priceFormatter.format(totalExpense)
+    budgetEl.innerHTML = priceFormatter.format(totalBudget);
+
+    let percentageDiv = `<div class="badge">${expensePercents}%</div>`;
     expensePercents > 0 ? percentageWrapper.innerHTML = percentageDiv : percentageWrapper.innerHTML = '';
 
 }
+function displayMonth (){
+    const now = new Date();
+    const year = now.getFullYear();
 
-function resetForm() {
-    form.reset();
+    const timeFormatter = new Intl.DateTimeFormat('re-RU', {
+        month: 'long'
+    })
+    const month = timeFormatter.format(now)
+    monthEl.innerHTML = month;
+    yearEl.innerHTML = year;
+
 }
-
+//Actions
+displayMonth()
 renderDemoData()
 calcBudget()
+//Отправка формы, добавление записей
 form.addEventListener('submit', (e) => {
 // Остановили стандартное поведение при отправке формы
     e.preventDefault();
@@ -97,7 +115,7 @@ form.addEventListener('submit', (e) => {
     //Собираем данные из формы и записываем в объект
     const note = {
         id: id,
-        title: title.value,
+        title: title.value.trim(),
         cost: +cost.value,
         type: type.value,
     };
@@ -107,7 +125,7 @@ form.addEventListener('submit', (e) => {
     const incomeTemplate = ` <li data-id="${note.id}" class="budget-list__item item item--income">
             <div class="item__title">${note.title}</div>
             <div class="item__right">
-              <div class="item__amount">+ ${note.cost}</div>
+              <div class="item__amount">+ ${priceFormatter.format(note.cost)}</div>
               <button class="item__remove">
                 <img src="./img/circle-green.svg" alt="delete" />
               </button>
@@ -116,28 +134,28 @@ form.addEventListener('submit', (e) => {
     const expTemplate = ` <li data-id="${note.id}" class="budget-list__item item item--expense">
             <div class="item__title">${note.title}</div>
             <div class="item__right">
-              <div class="item__amount">- ${note.cost}</div>
+              <div class="item__amount">- ${priceFormatter.format(note.cost)}</div>
               <button class="item__remove">
                 <img src="./img/circle-red.svg" alt="delete" />
               </button>
             </div>
           </li>`
 
-    //Проверяем велью инпута, в какую колонку вносить запись - в расход, или доход
-    if (title.value === '') {
+    //Выводим ошибку, если поле одно из полей не заполнено
+    if (title.value.trim() === '') {
         title.classList.add('form__input--error');
         return
     } else {
         title.classList.remove('form__input--error');
     }
-    if (cost.value === '') {
+    if (cost.value.trim() === '' || +cost.value <= 0) {
         cost.classList.add('form__input--error');
         return
     } else {
         cost.classList.remove('form__input--error');
     }
 
-
+    //Проверяем велью инпута, в какую колонку вносить запись - в расход, или доход
     if (note.type === 'inc') {
         incomesList.insertAdjacentHTML('afterbegin', incomeTemplate);
     }
@@ -158,16 +176,18 @@ document.addEventListener('click', (e) => {
     if (e.target.closest('.item__remove')) {
         const parentEl = e.target.closest('.budget-list__item');
         const id = +parentEl.dataset.id;
-        const curNote = budget.findIndex((el) => {
+        const curNoteIndex = budget.findIndex((el) => {
             if (el.id === id) {
                 return true
             }
         })
 
-        budget.splice(id, 1);
+        //Удаляем из массива
+        budget.splice(curNoteIndex, 1);
+        //Удаляем запись со страницы
         parentEl.remove()
+        //Считаем бюджет
         calcBudget()
-
 
 
     }
