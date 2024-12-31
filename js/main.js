@@ -33,8 +33,7 @@ function renderDemoData() {
     type.value = randomDemoObj.type;
 }
 
-renderDemoData()
-calcBudget()
+
 
 function calcBudget() {
 
@@ -84,6 +83,8 @@ function resetForm() {
     form.reset();
 }
 
+renderDemoData()
+calcBudget()
 form.addEventListener('submit', (e) => {
 // Остановили стандартное поведение при отправке формы
     e.preventDefault();
@@ -166,6 +167,7 @@ document.addEventListener('click', (e) => {
         budget.splice(id, 1);
         parentEl.remove()
         calcBudget()
+
 
 
     }
