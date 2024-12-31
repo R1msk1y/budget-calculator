@@ -6,6 +6,10 @@ const type = document.querySelector('#type');
 const incomesList = document.querySelector('#incomes-list');
 const expensesList = document.querySelector('#expenses-list');
 
+const incomeEl = document.querySelector('#total-income');
+const expenseEl = document.querySelector('#total-expense');
+const budgetEl = document.querySelector('#budget');
+const percentageWrapper = document.querySelector('#expense-percents-wrapper');
 const budget = [];
 
 
@@ -66,6 +70,13 @@ function calcBudget() {
     if (totalIncome > 0) {
         expensePercents = Math.round((totalExpense * 100) / totalIncome)
     }
+
+    //Выводим данные на страницу
+    incomeEl.innerHTML = totalIncome;
+    expenseEl.innerHTML = totalExpense;
+    budgetEl.innerHTML = totalBudget;
+    let percentageDiv = `<div class="badge">${expensePercents}</div>`;
+    expensePercents > 0 ? percentageWrapper.innerHTML = percentageDiv : percentageWrapper.innerHTML = '';
 
 }
 
